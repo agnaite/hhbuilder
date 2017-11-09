@@ -8,22 +8,18 @@
   var ageValid = false;
   var houseHold = [];
 
-  notValid(addButton, true);
+  updateAddButton();
 
   form.addEventListener('submit', submitForm);
   addButton.addEventListener('click', addPerson);
 
   relField.addEventListener('change', function() {
     validateRel(relField.value);
-    if (ageValid && relValid) {
-      notValid(addButton, false);
-    }
+    updateAddButton();
   });
   ageField.addEventListener('change', function() {
-    validateAge(ageField.value)
-    if (ageValid && relValid) {
-      notValid(addButton, false);
-    }
+    validateAge(ageField.value);
+    updateAddButton();
   });
 
   function addPerson(evt) {
@@ -44,8 +40,16 @@
 
   // helpers
 
-  function notValid(el, status) {
+  function disableButton(el, status) {
     el.disabled = status;
+  }
+
+  function updateAddButton() {
+    if (ageValid && relValid) {
+      disableButton(addButton, false);
+    } else {
+      disableButton(addButton, true);
+    }
   }
 
   function validateAge(age) {
@@ -54,7 +58,7 @@
     } else {
       console.log('age required and has to be > 0.')
       ageValid = false;
-      notValid(addButton, true);
+      disableButton(addButton, true);
     }
   }
 
@@ -64,7 +68,7 @@
     } else {
       console.log('relationship required.')
       relValid = false;
-      notValid(addButton, true);
+      disableButton(addButton, true);
     }
   }
 
