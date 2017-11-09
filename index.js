@@ -7,6 +7,7 @@
   var ageField = document.getElementsByName('age')[0];
   var smokerField = document.getElementsByName('smoker')[0];
   var debugEl = document.getElementsByClassName('debug')[0];
+  var domHousehold = document.getElementsByClassName('household')[0];
   var relValid = false;
   var ageValid = false;
   var household = [];
@@ -35,11 +36,15 @@
                      rel: relField.value,
                      smoker: smokerField.checked
                   });
+    addPersonToDOM(household[household.length-1]);
     updateSubmitButton();
-    console.log(household);
     // display person in html
       // with button to delete
   }
+
+  // function removePerson() {
+  //
+  // }
 
   // function onsubmit
   // serialize json and display in DEBUG
@@ -54,6 +59,19 @@
   }
 
   // helpers
+
+  function addPersonToDOM(person) {
+    var node = document.createElement("LI");
+    var deleteButton = document.createElement("BUTTON");
+    deleteButton.innerHTML = 'Delete';
+    deleteButton.className = 'delete';
+    var textnode = document.createTextNode('age: '+person.age+' |'+
+                                           ' relationship: '+person.rel+' |'+
+                                           ' smoker: '+person.smoker);
+    node.appendChild(textnode);
+    node.appendChild(deleteButton);
+    domHousehold.appendChild(node);
+  }
 
   function disableButton(el, status) {
     el.disabled = status;
