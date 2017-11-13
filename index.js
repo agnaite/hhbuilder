@@ -11,6 +11,7 @@
   var relValid = false;
   var ageValid = false;
   var household = [];
+  var count = 0;
 
   updateAddButton();
   updateSubmitButton();
@@ -19,10 +20,12 @@
   addButton.addEventListener('click', addPerson);
 
   relField.addEventListener('change', function() {
+    clearWarning();
     validateRel(relField.value);
     updateAddButton();
   });
   ageField.addEventListener('change', function() {
+    clearWarning();
     validateAge(ageField.value);
     updateAddButton();
   });
@@ -30,21 +33,30 @@
   function addPerson(evt) {
     evt.preventDefault();
 
-    console.log('can submit')
-
-    household.push({ age: ageField.value,
+    household.push({ id: count,
+                     age: ageField.value,
                      rel: relField.value,
                      smoker: smokerField.checked
                   });
     addPersonToDOM(household[household.length-1]);
     updateSubmitButton();
-    // display person in html
-      // with button to delete
+    count++;
   }
 
-  // function removePerson() {
-  //
-  // }
+  function deletePerson(evt) {
+    var personId = evt.target.parentElement.firstChild.innerHTML;
+
+    // remove li from dom
+    evt.target.parentElement.remove();
+
+    // remove person from household object
+    for (var i=0; i<household.length; i++) {
+      if (household[i].id == personId) {
+        household.splice(i, 1);
+        break;
+      }
+    }
+  }
 
   // function onsubmit
   // serialize json and display in DEBUG
@@ -55,7 +67,6 @@
 
     debugEl.innerHTML = jsonSubmission;
     debugEl.style.display = 'block';
-
   }
 
   // helpers
@@ -63,14 +74,19 @@
   function addPersonToDOM(person) {
     var node = document.createElement("LI");
     var deleteButton = document.createElement("BUTTON");
+    var personId = document.createElement("SPAN");
     deleteButton.innerHTML = 'Delete';
     deleteButton.className = 'delete';
+    personId.innerHTML = person.id;
+    personId.style.display = 'none';
     var textnode = document.createTextNode('age: '+person.age+' |'+
                                            ' relationship: '+person.rel+' |'+
                                            ' smoker: '+person.smoker);
+    node.appendChild(personId)
     node.appendChild(textnode);
     node.appendChild(deleteButton);
     domHousehold.appendChild(node);
+    deleteButton.addEventListener('click', deletePerson);
   }
 
   function disableButton(el, status) {
@@ -97,7 +113,7 @@
     if (isNotEmpty(age) && parseInt(age) > 0) {
       ageValid = true;
     } else {
-      console.log('age required and has to be > 0.')
+      addWarning('Age required and has to be > 0.');
       ageValid = false;
       disableButton(addButton, true);
     }
@@ -107,7 +123,7 @@
     if (isNotEmpty(rel)) {
       relValid = true;
     } else {
-      console.log('relationship required.')
+      addWarning('Relationship is required.');
       relValid = false;
       disableButton(addButton, true);
     }
@@ -119,6 +135,20 @@
     } else {
       return false;
     }
+  }
+
+  function addWarning(msg) {
+    var warning = document.createElement('DIV');
+    warning.className = 'warning';
+    warning.style.color = 'red';
+    var textnode = document.createTextNode(msg);
+    warning.appendChild(textnode);
+    form.prepend(warning);
+  }
+
+  function clearWarning() {
+    var warning = document.getElementsByClassName('warning')[0];
+    if (warning) { warning.innerHTML = '' };
   }
 
 })();
